@@ -12,7 +12,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             margin: 0;
             color: white;
             text-align: center;
@@ -23,18 +23,21 @@
             padding: 30px;
             border-radius: 15px;
             backdrop-filter: blur(10px);
+            max-width: 400px;
+            width: 90%;
         }
 
         .success {
             font-size: 24px;
             margin-bottom: 20px;
+            color: #4ade80;
         }
 
         .user-info {
             background: rgba(255, 255, 255, 0.2);
             padding: 15px;
             border-radius: 10px;
-            margin: 15px;
+            margin: 15px 0;
         }
 
         button {
@@ -46,14 +49,18 @@
             cursor: pointer;
             font-size: 16px;
             margin-top: 15px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #ff5252;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="success"> ✔️ успешная авторизация!</div>
-        <div id="userInfo" class="user-info">
-        </div>
+        <div class="success">✔️ Успешная авторизация!</div>
+        <div id="userInfo" class="user-info"></div>
         <p>Теперь ты можешь вернуться в игру</p>
         <button onclick="closeAuth()">Вернуться в игру</button>
     </div>
@@ -70,11 +77,21 @@
             hash: urlParams.get('hash')
         };
 
-        document.getElementById('userInfo').innerHTML = `
-            <strong>Добро пожаловать, ${userData.first_name || 'Игрок'}!</strong><br>
-            ${userData.username ? '@' + userData.username : ''}<br>
-            <small>ID: ${userData.id}</small>
-        `;
+        // Отображаем информацию о пользователе
+        if (userData.first_name) {
+            document.getElementById('userInfo').innerHTML = `
+                <strong>Добро пожаловать, ${userData.first_name}!</strong><br>
+                ${userData.username ? '@' + userData.username : ''}<br>
+                <small>ID: ${userData.id}</small>
+            `;
+        } else {
+            document.getElementById('userInfo').innerHTML = `
+                <strong>Добро пожаловать, игрок!</strong><br>
+                <small>Информация о пользователе недоступна</small>
+            `;
+        }
+
+        // Сохраняем данные пользователя
         localStorage.setItem('tg_user', JSON.stringify(userData));
 
         function closeAuth() {
@@ -85,6 +102,7 @@
                         user: userData
                     }));
                 }
+
                 if (window.opener) {
                     window.close();
                 } else {
@@ -96,6 +114,7 @@
             }
         }
 
+        // Автоматическое возвращение через 3 секунды
         setTimeout(closeAuth, 3000);
     </script>
 </body>
